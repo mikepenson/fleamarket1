@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<!-- 开发模式，在修改struts配置文件的时候不需要重启服务器 -->
+	<constant name="struts.devMode" value="true"/>
+	
+	<package name="fleamarket" extends="json-default" ><!-- 配置支持json格式数据 -->
+		<!-- 全局result，对这个package中的所有action有效 -->
+		<global-results>
+			<result name="aindex">/WEB-INF/main/aindex.jsp</result>
+			<result name="stream" type="stream">
+				<param name="inputStream">inputStream</param><!-- imputStream中有要传的数据 -->
+			</result>
+			<result name="login" type="redirect">/login.jsp</result>
+			<result name="goURL" type="redirect">${#session.goURL}</result>
+		</global-results>
+		
+		<!-- 用来完成系统 请求转发的action,所有的请求都交给execute-->  
+		<action name="send_*_*" class="sendAction">
+			<result name="send" type="dispatcher">/WEB-INF/{1}/{2}.jsp</result>
+		</action>
+	
+	
+		<!-- action配置在此处 -->
+		<action name="admin_*" class="adminAction" method="{1}">
+			<result name="success">/success.jsp</result>
+		</action>
+		
+		<action name="user_*" class="userAction" method="{1}">
+			<result name="jsonMap" type="json">
+				<!-- 将栈顶的model替换成json对象jsonMap：Struts通过getter方法获取 -->
+				<param name="root">jsonMap</param>
+				<!-- 过滤敏感信息：密码 -->
+				<param name="excludeProperties">
+					<!-- rows[0].password -->
+					rows\[\d+\]\.password
+				</param>
+			</result>
+			<result name="imageStream" type="stream">
+				<param name="contentType">image/jpeg</param>
+				<param name="inputStream">inputStream</param>
+				<param name="bufferSize">2048</param>
+			</result>
+			<result name="index">/index.jsp</result>
+		</action>
+		
+		<action name="goods_*" class="goodsAction" method="{1}">
+			<result name="jsonMap" type="json">
+				<!-- 将栈顶的model替换成json对象jsonMap：Struts通过getter方法获取 -->
+				<param name="root">jsonMap</param>
+			</result>
+			<result name="stream" type="stream">
+				<param name="inputStream">inputStream</param><!-- imputStream中有要传的数据 -->
+			</result>
+			<result name="goodsList">/goodsList.jsp</result>
+			<result name="goodsInfo">/goodsInfo.jsp</result>
+			<result name="myGoods">/user/myGoods.jsp</result>
+			<result name="update">/user/update.jsp</result>
+		</action>
+		
+		<action name="goodstype_*" class="goodstypeAction" method="{1}">
+			<result name="treeList" type="json"></result>
+			<result name="jsonList" type="json">
+				<!-- 要转化成json数据的对象 -->
+				<param name="root">jsonList</param>	
+			</result>
+		</action>
+		<action name="subtype_*" class="subtypeAction" method="{1}">
+			<result name="jsonList" type="json">
+				<!-- 要转化成json数据的对象 -->
+				<param name="root">jsonList</param>	
+			</result>
+		</action>
+		
+	</package>
+
+</struts>    
